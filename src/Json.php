@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules;
 
-use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\InvalidJsonException;
 
 class Json
@@ -15,16 +14,9 @@ class Json
     protected $path;
 
     /**
-     * The laravel filesystem instance.
-     *
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    protected $filesystem;
-
-    /**
      * The attributes collection.
      *
-     * @var \Illuminate\Support\Collection
+     * @var array
      */
     protected $attributes;
 
@@ -32,37 +24,11 @@ class Json
      * The constructor.
      *
      * @param mixed                             $path
-     * @param \Illuminate\Filesystem\Filesystem $filesystem
      */
-    public function __construct($path, Filesystem $filesystem = null)
+    public function __construct($path)
     {
         $this->path = (string) $path;
-        $this->filesystem = $filesystem ?: new Filesystem();
-        $this->attributes = Collection::make($this->getAttributes());
-    }
-
-    /**
-     * Get filesystem.
-     *
-     * @return Filesystem
-     */
-    public function getFilesystem()
-    {
-        return $this->filesystem;
-    }
-
-    /**
-     * Set filesystem.
-     *
-     * @param Filesystem $filesystem
-     *
-     * @return $this
-     */
-    public function setFilesystem(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
-
-        return $this;
+        $this->attributes = $this->getAttributes();
     }
 
     /**
@@ -93,13 +59,12 @@ class Json
      * Make new instance.
      *
      * @param string                            $path
-     * @param \Illuminate\Filesystem\Filesystem $filesystem
      *
      * @return static
      */
-    public static function make($path, Filesystem $filesystem = null)
+    public static function make($path)
     {
-        return new static($path, $filesystem);
+        return new static($path);
     }
 
     /**
@@ -109,7 +74,7 @@ class Json
      */
     public function getContents()
     {
-        return $this->filesystem->get($this->getPath());
+        return file_get_contents($this->getPath());
     }
 
     /**
@@ -195,7 +160,7 @@ class Json
      */
     public function save()
     {
-        return $this->filesystem->put($this->getPath(), $this->toJsonPretty());
+        return file_put_contents($this->getPath(), $this->toJsonPretty());
     }
 
     /**
@@ -220,7 +185,7 @@ class Json
      */
     public function get($key, $default = null)
     {
-        return $this->attributes->get($key, $default);
+        return $this->attributes[$key] ?? $default;
     }
 
     /**

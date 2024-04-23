@@ -6,6 +6,7 @@ use Countable;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
@@ -23,7 +24,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     /**
      * Application instance.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
+     * @var Application
      */
     protected $app;
 
