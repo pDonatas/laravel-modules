@@ -117,11 +117,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
 
-        $paths = array_map(function ($path) {
+        return array_map(function ($path) {
             return Str::endsWith($path, '/*') ? $path : Str::finish($path, '/*');
         }, $paths);
-
-        return $paths;
     }
 
     /**
@@ -141,20 +139,30 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function scan()
     {
-        $paths = $this->getScanPaths();
+//        $paths = $this->getScanPaths();
+//
+//        $modules = [];
+
+//        foreach ($paths as $path) {
+//            $manifests = $this->getFiles()->glob("{$path}/module.json");
+
+//            is_array($manifests) || $manifests = [];
+//
+//            foreach ($manifests as $manifest) {
+//                $name = basename(dirname($manifest));
+//
+//                $modules[$name] = $this->createModule($this->app, $name, dirname($manifest));
+//            }
+//        }
+
+        $names = array_keys(array_filter(json_decode(file_get_contents(base_path('modules_statuses.json')), true), function ($value) {
+            return $value;
+        }));
 
         $modules = [];
 
-        foreach ($paths as $path) {
-            $manifests = $this->getFiles()->glob("{$path}/module.json");
-
-            is_array($manifests) || $manifests = [];
-
-            foreach ($manifests as $manifest) {
-                $name = basename(dirname($manifest));
-
-                $modules[$name] = $this->createModule($this->app, $name, dirname($manifest));
-            }
+        foreach ($names as $name) {
+            $modules[$name] = $this->createModule($this->app, $name, base_path('Modules/' . $name));
         }
 
         return $modules;
